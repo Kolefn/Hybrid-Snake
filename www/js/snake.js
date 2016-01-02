@@ -1,7 +1,11 @@
 /*
-JavaScript Snake
+Original Javascript Snake Game
 By Patrick Gillespie
 http://patorjk.com/games/snake
+
+Forked mobile adaption
+by Kole Nunley
+http://kolenunley.com
 */
 
 /**
@@ -11,6 +15,7 @@ http://patorjk.com/games/snake
 
 var SNAKE = SNAKE || {};
 
+
 /**
 * @method addEventListener
 * @param {Object} obj The object to add an event listener to.
@@ -18,6 +23,8 @@ var SNAKE = SNAKE || {};
 * @param {Function} funct The function to execute when the event is triggered.
 * @param {Boolean} evtCapturing True to do event capturing, false to do event bubbling.
 */
+window.onload = function(){
+    
 SNAKE.addEventListener = (function() {
     if (window.addEventListener) {
         return function(obj, event, funct, evtCapturing) {
@@ -64,7 +71,8 @@ SNAKE.Snake = SNAKE.Snake || (function() {
     // -------------------------------------------------------------------------
     
     var instanceNumber = 0;
-    var blockPool = [];
+    blockPool = [];
+    
     
     var SnakeBlock = function() {
         this.elm = null;
@@ -105,10 +113,11 @@ SNAKE.Snake = SNAKE.Snake || (function() {
             startRow - The row the snake should start on.
             startCol - The column the snake should start on.
     */
+    
     return function(config) {
-    
+        
         if (!config||!config.playingBoard) {return;}
-    
+ 
         // ----- private variables -----
 
         var me = this,
@@ -121,16 +130,11 @@ SNAKE.Snake = SNAKE.Snake || (function() {
             rowShift = [-1, 0, 1, 0],
             xPosShift = [],
             yPosShift = [],
-            snakeSpeed = 75,
             isDead = false,
             isPaused = false;
-        function getMode (mode, speed) {
-    document.getElementById(mode).addEventListener('click', function () { snakeSpeed = speed; });
-}
-            getMode('Easy', 100);
-            getMode('Medium', 75);
-            getMode('Difficult', 50);
+         
         // ----- public variables -----
+        snakeSpeed = 75;
         me.snakeBody = {};
         me.snakeBody["b0"] = new SnakeBlock(); // create snake head
         me.snakeBody["b0"].row = config.startRow || 1;
@@ -180,7 +184,7 @@ SNAKE.Snake = SNAKE.Snake || (function() {
             playingBoard.getBoardContainer().appendChild( tempBlock.elm );
             blockPool[blockPool.length] = tempBlock;
         }
-        
+            
         // ----- public methods -----
         
         me.setPaused = function(val) {
@@ -284,6 +288,7 @@ SNAKE.Snake = SNAKE.Snake || (function() {
                 me.handleDeath();
             } else if (grid[newHead.row][newHead.col] === playingBoard.getGridFoodValue()) {
                 grid[newHead.row][newHead.col] = 1;
+                
                 me.eatFood();
                 setTimeout(function(){me.go();}, snakeSpeed);
             }
@@ -314,7 +319,8 @@ SNAKE.Snake = SNAKE.Snake || (function() {
             me.snakeTail = me.snakeBody[index];
             me.snakeTail.next = me.snakeHead;
             me.snakeHead.prev = me.snakeTail;
-
+            
+            
             playingBoard.foodEaten();
         };
         
@@ -327,8 +333,9 @@ SNAKE.Snake = SNAKE.Snake || (function() {
                 var highScore = localStorage.jsSnakeHighScore;
                 if (highScore == undefined) localStorage.setItem('jsSnakeHighScore', me.snakeLength);
                 if (me.snakeLength > highScore) {
-                    alert('Congratulations! You have beaten your previous high score, which was ' + highScore + '.');
+                    
                         localStorage.setItem('jsSnakeHighScore', me.snakeLength);
+                        updateHighScore();
                 }
 }
             recordScore();
@@ -511,6 +518,7 @@ SNAKE.Food = SNAKE.Food || (function() {
 
 SNAKE.Board = SNAKE.Board || (function() {
 
+    
     // -------------------------------------------------------------------------
     // Private static variables and methods
     // -------------------------------------------------------------------------
@@ -585,7 +593,7 @@ SNAKE.Board = SNAKE.Board || (function() {
             myKeyListener,
             isPaused = false,//note: both the board and the snake can be paused
             // Board components
-            elmContainer, elmPlayingField, elmAboutPanel, elmLengthPanel, elmWelcome, elmTryAgain, elmPauseScreen;
+            elmContainer, elmPlayingField, elmAboutPanel, elmLengthPanel, elmScorePanel, elmWelcome, elmTryAgain, elmPauseScreen;
         
         // --- public variables ---
         me.grid = [];
@@ -595,6 +603,7 @@ SNAKE.Board = SNAKE.Board || (function() {
         // ---------------------------------------------------------------------
         
         function createBoardElements() {
+            
             elmPlayingField = document.createElement("div");
             elmPlayingField.setAttribute("id", "playingField");
             elmPlayingField.className = "snake-playing-field";
@@ -605,15 +614,19 @@ SNAKE.Board = SNAKE.Board || (function() {
             
             elmPauseScreen = document.createElement("div");
             elmPauseScreen.className = "snake-pause-screen";
-            elmPauseScreen.innerHTML = "<div style='padding:10px;'>[Paused]<p/>Press [space] to unpause.</div>";
+            elmPauseScreen.innerHTML = "<div style='padding:10px;'>[Paused]<p/>Double tap to unpause.</div>";
             
             elmAboutPanel = document.createElement("div");
             elmAboutPanel.className = "snake-panel-component";
-            elmAboutPanel.innerHTML = "<a href='http://patorjk.com/blog/software/' class='snake-link'>more patorjk.com apps</a> - <a href='https://github.com/patorjk/JavaScript-Snake' class='snake-link'>source code</a>";
+            elmAboutPanel.innerHTML = "<a href='http://patorjk.com/blog/software/' class='snake-link'>Fork of Javascript-Snake</a> - <a href='https://github.com/Kolefn/Hybrid-Snake' class='snake-link'>source code</a>";
             
             elmLengthPanel = document.createElement("div");
             elmLengthPanel.className = "snake-panel-component";
             elmLengthPanel.innerHTML = "Length: 1";
+            elmScorePanel = document.createElement("div");
+            elmScorePanel.className = "snake-score-component";
+            elmScorePanel.innerHTML = '<p style="color: gold;font-size:25px; top-margin: -15px"> <img src="img/crownIcon.png" class="icon crownIcon"></img>' + getHighScore() + '</p>'
+            
             
             elmWelcome = createWelcomeElement();
             elmTryAgain = createTryAgainElement();
@@ -635,6 +648,7 @@ SNAKE.Board = SNAKE.Board || (function() {
             elmContainer.appendChild(elmLengthPanel);
             elmContainer.appendChild(elmWelcome);
             elmContainer.appendChild(elmTryAgain);
+            elmContainer.appendChild(elmScorePanel);
             
             mySnake = new SNAKE.Snake({playingBoard:me,startRow:2,startCol:2});
             myFood = new SNAKE.Food({playingBoard: me});
@@ -658,8 +672,9 @@ SNAKE.Board = SNAKE.Board || (function() {
             if (config.fullScreen) {
                 fullScreenText = "On Windows, press F11 to play in Full Screen mode.";   
             }
-            welcomeTxt.innerHTML = "JavaScript Snake<p></p>Use the <strong>arrow keys</strong> on your keyboard to play the game. " + fullScreenText + "<p></p>";
+            welcomeTxt.innerHTML = "Hybrid Snake<p></p><strong>Swipe</strong> to control the snake." + fullScreenText + "<p></p>";
             var welcomeStart = document.createElement("button");
+            welcomeStart.className = "button button-outline button-balanced";
             welcomeStart.appendChild(document.createTextNode("Play Game"));
             var loadGame = function() {
                 SNAKE.removeEventListener(window, "keyup", kbShortcut, false);
@@ -689,8 +704,9 @@ SNAKE.Board = SNAKE.Board || (function() {
             tmpElm.className = "snake-try-again-dialog";
             
             var tryAgainTxt = document.createElement("div");
-            tryAgainTxt.innerHTML = "JavaScript Snake<p></p>You died :(.<p></p>";
+            tryAgainTxt.innerHTML = "Hybrid Snake<p></p>You died :(.<p></p>";
             var tryAgainStart = document.createElement("button");
+            tryAgainStart.className = "button button-outline button-balanced";
             tryAgainStart.appendChild( document.createTextNode("Play Again?"));
             
             var reloadGame = function() {
@@ -812,8 +828,8 @@ SNAKE.Board = SNAKE.Board || (function() {
         * @method setupPlayingField
         */ 
         me.setupPlayingField = function () {
-            
             if (!elmPlayingField) {createBoardElements();} // create playing field
+            
             
             // calculate width of our game container
             var cWidth, cHeight;
@@ -822,7 +838,7 @@ SNAKE.Board = SNAKE.Board || (function() {
                 cLeft = 0;
                 cWidth = getClientWidth()-5;
                 cHeight = getClientHeight()-5;
-                document.body.style.backgroundColor = "#FC5454";
+                document.body.style.backgroundColor = "#000000";
             } else {
                 cTop = config.top;
                 cLeft = config.left;
@@ -854,8 +870,11 @@ SNAKE.Board = SNAKE.Board || (function() {
             elmAboutPanel.style.width = "450px";
             elmAboutPanel.style.left = Math.round(cWidth/2) - Math.round(450/2) + "px";
             
-            elmLengthPanel.style.top = pLabelTop;
+            elmLengthPanel.style.top = (getClientHeight() -(getClientHeight()*(1/8))) + "px";
             elmLengthPanel.style.left = cWidth - 120 + "px";
+            elmScorePanel.style.top = (getClientHeight() -(getClientHeight()*(2/15))) + "px";
+
+            elmScorePanel.style.right = cWidth - 120 + "px";
             
             // if width is too narrow, hide the about panel
             if (cWidth < 700) {
@@ -881,19 +900,7 @@ SNAKE.Board = SNAKE.Board || (function() {
             
             myFood.randomlyPlaceFood();
             
-            // setup event listeners
-          /*  var myKeyListener = Hammer(document.getElementById("game-area"), {
-                
-            });
-            myKeyListener.get('swipe').set({ direction: Hammer.DIRECTION_ALL });
-          */
-            
-            function getMode (mode, speed) {
-    document.getElementById(mode).addEventListener('click', function (event) {
-        snakeSpeed = speed; });}
-            getMode('Easy', 100);
-            getMode('Medium', 75);
-            getMode('Difficult', 50);
+        
             window.myKeyListener = function(evt) {
                 
                 //if (!ev) var ev = window.event;
@@ -902,16 +909,14 @@ SNAKE.Board = SNAKE.Board || (function() {
                 if (me.getBoardState() === 1) {
                     if ( !(keyNum == 'swipeleft' || keyNum == 'swipedown' || keyNum == 'swipeup' || keyNum == 'swiperight')) {return;} // if not an arrow key, leave
                     
-                    // This removes the listener added at the #listenerX line
-                    //myKeyListener.off('swipeleft swiperight swipeup swipedown', function(evt){})
-                    //SNAKE.removeEventListener(elmContainer, "touchmove", myKeyListener, false);
+                   
                     
                    window.myKeyListener = function(evt) {
                         //if (!evt) var evt = window.event;
                         var keyNum = evt
                         
                         //console.log(keyNum);
-                        if (keyNum === 32) {
+                        if (keyNum === 'doubleTap') {
                             me.setPaused(!me.getPaused());
                         }
                         
@@ -947,7 +952,16 @@ SNAKE.Board = SNAKE.Board || (function() {
         * @method foodEaten
         */ 
         me.foodEaten = function() {
+            window.triggerSound('/audio/eatSound.wav');
             elmLengthPanel.innerHTML = "Length: " + mySnake.snakeLength;
+            
+            if (mySnake.snakeLength > localStorage.jsSnakeHighScore) {
+                        window.triggerSound('/audio/highScoreSound.wav');
+                        localStorage.setItem('jsSnakeHighScore', mySnake.snakeLength);
+                elmScorePanel.innerHTML = '<p style="color: gold;font-size:25px; top-margin: -15px"> <img src="img/crownIcon.png" class="icon crownIcon"></img>' + getHighScore() + '</p>'
+            
+                        
+                }
             myFood.randomlyPlaceFood();
         };
         
@@ -956,6 +970,7 @@ SNAKE.Board = SNAKE.Board || (function() {
         * @method handleDeath
         */ 
         me.handleDeath = function() {
+            window.triggerSound('/audio/onDeath.wav');
             var index = Math.max(getNextHighestZIndex( mySnake.snakeBody), getNextHighestZIndex( {tmp:{elm:myFood.getFoodElement()}} ));
             elmContainer.removeChild(elmTryAgain);
             elmContainer.appendChild(elmTryAgain);
@@ -988,10 +1003,14 @@ SNAKE.Board = SNAKE.Board || (function() {
         
     }; // end return function
 })();
-function getHighScore () {
-    document.getElementById('high-score').addEventListener('click', function () {
-        if (localStorage.jsSnakeHighScore == undefined) alert('You have not played this game yet!');
-        else
-    alert('Your current high score is ' + localStorage.jsSnakeHighScore + '.'); });
+
+
 }
-getHighScore();
+getHighScore = function() {
+
+     if(localStorage.jsSnakeHighScore == undefined)
+         return 0;
+     else
+         return localStorage.jsSnakeHighScore;
+
+}

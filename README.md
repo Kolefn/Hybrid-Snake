@@ -1,3 +1,10 @@
+
+Hybrid Snake<br/> By Kole Nunley<br/> License: MIT<br/>http://kolenunley.com I loved the simplicity of the original browser game by Patorjk and decided to wrap it with Cordova and Ionic to adapt it to mobile devices.
+
+
+
+
+Original Read Me (to give credit)
 JavaScript Snake<br/>
 By Patrick Gillespie<br/>
 License: MIT<br/>

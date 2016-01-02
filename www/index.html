@@ -9,73 +9,111 @@
     <link href="css/style.css" rel="stylesheet">
     <link rel="stylesheet" id="style" type="text/css" href="./css/main-snake.css">
     <!-- ionic/angularjs js -->
+    
     <script src="lib/ionic/js/ionic.bundle.js"></script>
+    
 
     <!-- cordova script (this will be a 404 during development) -->
+ 
     <script src="cordova.js"></script>
-
+    
     <!-- your app's js -->
+    
     <script src="js/app.js"></script>
-
-
-     
-<script>
-function getTheme () {
-    function changeTheme (Theme) {
-        document.getElementById('style').setAttribute('href', Theme);
-    }
-    var index = document.getElementById("select").selectedIndex;
-    switch (index) {
-        case 0: 
-          changeTheme('css/dark-snake.css');
-          break;
-          case 1: changeTheme('css/main-snake.css');
-    }
-}
-if (navigator.onLine && window.location.hostname === 'patorjk.com') {
-    var _gaq = _gaq || [];
-    _gaq.push(['_setAccount', 'UA-3312460-1']);
-    _gaq.push(['_trackPageview']);
-
-    (function() {
-      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-    })();
-}
-</script>
-   <button onclick="getTheme()">Click to use this theme.</button>
-    <select id="select">
-        <option>Dark Theme</option>
-        <option>Revert To Original</option>
-    </select>
-    <div id="mode-wrapper">Select which mode you would like to play in.<br><button id="Easy">Easy</button><br><button id="Medium">Medium</button><br><button id="Difficult">Difficult</button></div>
-<button id="high-score">Get your current high score for this game.</button>
-        
-  </head>
-  <body ng-app="starter" ng-controller="controller">
-    <ion-pane>
-        <ion-header-bar class="header">
-            <title>Hybrid Snake</title>
+    
+    <script type="text/javascript" src="./js/snake.js"></script>
+    
     
      
-        </ion-header-bar>
-      <ion-content scroll="false" >
 
-      		<div id="game-area" tabindex="0" on-swipe-left="myKeyListenerIonic('swipeleft')" on-swipe-right="myKeyListenerIonic('swiperight')" on-swipe-down="myKeyListenerIonic('swipedown')" on-swipe-up="myKeyListenerIonic('swipeup')">
-    </div>
-    <script type="text/javascript" src="/js/hammer.min.js"></script>
-    <script type="text/javascript" src="./js/snake.js"></script>
-    <script type="text/javascript">
-    var mySnakeBoard = new SNAKE.Board( {
-                                        boardContainer: "game-area",
-                                        fullScreen: false,
-                                        width: getWidth,
-                                        height: getHeight - 40
-                                    });   
-    </script>
+  </head>
 
+  <body ng-app="hybridSnake" ng-controller="controller">
+      <div class="se-pre-con"></div>
+    <ion-pane>
+        
+        <ion-nav-bar class="navBar">
+          <ion-nav-back-button>
+          </ion-nav-back-button>
+            
+            <ion-nav-buttons side="right">
+            
+                <button ng-click="soundButton()" style="color: gray;" class="button button-clear icon {{soundIconReturn()}}"> 
+                    
+                
+                </button>
+            
+            </ion-nav-buttons>
+       
+        </ion-nav-bar>
+             
+        <ion-nav-view></ion-nav-view>
+        
+       
+
+
+     <script id="gameBoard.html" type="text/ng-template">
+         
+         <ion-view ng-controller="gameBoardCtrl">
+             
+            
+                <ion-nav-back-button class="button button-icon ion-arrow-left padding">
+                </ion-nav-back-button>
+             
+          <ion-content scroll="false" >
+              
+                 
+                <div id="game-area" tabindex="0" on-swipe-left="myKeyListenerIonic('swipeleft')" on-swipe-right="myKeyListenerIonic('swiperight')" on-swipe-down="myKeyListenerIonic('swipedown')" on-swipe-up="myKeyListenerIonic('swipeup')" on-double-tap="myKeyListenerIonic('doubleTap')">
+               
+               
+              </div>
+              
       </ion-content>
+         </ion-view>
+    </script>    
+        
+        
+        
+      <script id="home.html" type="text/ng-template">
+        <ion-view ng-controller="controller" >
+            <ion-content scroll="false" style="background-color: black">
+                
+                 
+                
+                
+                <div id="mode-wrapper" class="menuButtonWrapper">
+                    <img src="img/HybridSnakeLogo.png" class="logoImg"></img>
+                    <br>
+                    <button ng-click="sendSpeed(125); startSound('/audio/menuButtonSound.wav')" class="button button-balanced menuButton" style="margin-top: 10px" ui-sref="gameBoard" >Easy</button><br>
+                    <button ng-click="sendSpeed(100); startSound('/audio/menuButtonSound.wav')" class="button button-royal menuButton" ui-sref="gameBoard" >Medium</button><br>
+                    <button ng-click="sendSpeed(75); startSound('/audio/menuButtonSound.wav')" class="button button-assertive menuButton" ui-sref="gameBoard" >Hard</button>
+                    
+                </div>
+                <div class="highScoreWrapper">
+                   <p style="color: gold;font-size:25px"> <img src="img/crownIcon.png" class="icon crownIcon"></img>{{displayHighScore()}}</p>
+            
+                    
+                </div>
+        
+          
+                
+                <div style="text-align: center; margin-top: 50px " >
+                    <button ng-click="openBrowser('https://github.com/Kolefn/Hybrid-Snake')" class="button button-small button-outline">Source Code</button>
+                    <button ng-click="openBrowser('https://github.com/patorjk/JavaScript-Snake')" class="button button-small button-outline ">Original</button>
+                    <button ng-click="openBrowser('http://kolenunley.com')"  class="button button-small button-outline">Dev Website</button>
+                    
+                    
+                    
+                </div>
+            </ion-content>  
+          
+          
+        </ion-view>
+        
+        
+      </script>    
+    
     </ion-pane>
+ 
   </body>
 </html>
